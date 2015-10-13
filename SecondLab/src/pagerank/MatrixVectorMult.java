@@ -2,6 +2,7 @@ package pagerank;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.StringTokenizer;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -34,8 +35,28 @@ public class MatrixVectorMult {
 
 		protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException
 		{
+			StringTokenizer itr=new StringTokenizer(value.toString()," ");
+			String a= new String(itr.nextToken());
+			String b= new String((itr.nextToken()));
+			
+			IntWritable theKey;
+			Text theText;
 
-			throw new UnsupportedOperationException("Implementation missing");	
+			if(itr.hasMoreTokens()){
+
+				theKey=new IntWritable(Integer.parseInt(b));
+				String c=new String(itr.nextToken());
+				theText= new Text(a.toString()+"   "+c.toString());
+			}
+			else{
+				theKey=new IntWritable(Integer.parseInt(a));
+				theText= new Text(b.toString());
+			}
+			
+
+			context.write(theKey, theText);
+
+			System.out.println(theKey);
 		}
 	}
 
