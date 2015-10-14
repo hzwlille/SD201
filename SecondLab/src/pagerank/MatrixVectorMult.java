@@ -78,14 +78,7 @@ public class MatrixVectorMult {
 			System.out.println(key);
 			while(count.hasNext()){
 				element.add(count.next().toString());
-				itr=new StringTokenizer(element.get(i));
-
-				//System.out.print(element.get(i));
-				//System.out.println("$$$$$$$$$$$$$$$");
-
-				//System.out.print("the value of i");
-
-				//	System.out.println(i);				
+				itr=new StringTokenizer(element.get(i));			
 				i++;
 				if(itr.countTokens()!=2){
 					valueToMultiply=Double.parseDouble(itr.nextToken());
@@ -101,11 +94,7 @@ public class MatrixVectorMult {
 
 					context.write(a,b);
 
-					System.out.print(a);
-
-					System.out.print("-------");
-
-					System.out.println(b);
+					
 				}
 			}
 
@@ -119,8 +108,7 @@ public class MatrixVectorMult {
 
 		protected void map(Text key, Text value, Context context) throws IOException, InterruptedException
 		{
-			System.out.print(key);
-			System.out.println("SecondMap");
+			context.write(new IntWritable(Integer.parseInt(key.toString())), new DoubleWritable(Double.parseDouble(value.toString())));
 
 		}
 	}
@@ -129,7 +117,7 @@ public class MatrixVectorMult {
 
 		protected void reduce(IntWritable key, Iterable<DoubleWritable> values, Context context) throws IOException, InterruptedException{
 
-			throw new UnsupportedOperationException("Implementation missing");	
+			
 		}
 	}
 
