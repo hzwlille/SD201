@@ -74,8 +74,6 @@ public class MatrixVectorMult {
 			IntWritable a;
 			DoubleWritable b;
 			Double b1;
-			System.out.print("***************The key:*****************");
-			System.out.println(key);
 			while(count.hasNext()){
 				element.add(count.next().toString());
 				itr=new StringTokenizer(element.get(i));			
@@ -116,8 +114,7 @@ public class MatrixVectorMult {
 	static class CombinerForSecondMap extends Reducer<IntWritable, DoubleWritable, IntWritable, DoubleWritable> {
 
 		protected void reduce(IntWritable key, Iterable<DoubleWritable> values, Context context) throws IOException, InterruptedException{
-
-			
+			System.out.println("!!!!!!!!!!!!!!!");
 		}
 	}
 
@@ -125,7 +122,13 @@ public class MatrixVectorMult {
 
 		protected void reduce(IntWritable key, Iterable<DoubleWritable> values, Context context) throws IOException, InterruptedException{
 
-			throw new UnsupportedOperationException("Implementation missing");	
+			Double calcule=(double) 0;
+			Iterator<DoubleWritable> count = values.iterator();
+			while(count.hasNext()){
+				calcule=calcule+count.next().get();
+			}
+			System.out.println(calcule);
+			context.write(key, new DoubleWritable(calcule));
 		}
 	}
 
