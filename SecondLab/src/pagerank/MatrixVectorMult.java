@@ -1,7 +1,9 @@
 package pagerank;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import org.apache.commons.io.FileUtils;
@@ -38,7 +40,7 @@ public class MatrixVectorMult {
 			StringTokenizer itr=new StringTokenizer(value.toString()," ");
 			String a= new String(itr.nextToken());
 			String b= new String((itr.nextToken()));
-			
+
 			IntWritable theKey;
 			Text theText;
 
@@ -46,17 +48,16 @@ public class MatrixVectorMult {
 
 				theKey=new IntWritable(Integer.parseInt(b));
 				String c=new String(itr.nextToken());
-				theText= new Text(a.toString()+"   "+c.toString());
+				theText= new Text(a.toString()+" "+c.toString());
 			}
 			else{
 				theKey=new IntWritable(Integer.parseInt(a));
 				theText= new Text(b.toString());
 			}
-			
-
+			//	System.out.print(theKey);
+			//	System.out.print("==============");
+			//	System.out.println(theText);
 			context.write(theKey, theText);
-
-			System.out.println(theKey);
 		}
 	}
 
@@ -65,7 +66,52 @@ public class MatrixVectorMult {
 
 		protected void reduce(IntWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException{
 
-			throw new UnsupportedOperationException("Implementation missing");	
+			StringTokenizer itr;
+			ArrayList<String> element= new ArrayList<String>();
+			Double valueToMultiply = null;
+			Iterator<Text> count = values.iterator();
+			int i = 0;
+			IntWritable a;
+			DoubleWritable b;
+			Double b1;
+			System.out.print("***************The key:*****************");
+			System.out.println(key);
+			while(count.hasNext()){
+				element.add(count.next().toString());
+				itr=new StringTokenizer(element.get(i));
+
+				//System.out.print(element.get(i));
+				//System.out.println("$$$$$$$$$$$$$$$");
+
+				//System.out.print("the value of i");
+
+				//	System.out.println(i);				
+				i++;
+				if(itr.countTokens()!=2){
+					valueToMultiply=Double.parseDouble(itr.nextToken());
+				}
+
+			}
+			for(int j=0;j<i;j++){
+				itr=new StringTokenizer(element.get(j));
+				if(itr.countTokens()==2){
+					a=new IntWritable(Integer.parseInt(itr.nextToken()));
+					b1=Double.parseDouble(itr.nextToken());
+					b=new DoubleWritable(b1*valueToMultiply);
+
+					context.write(a,b);
+
+					System.out.print(a);
+
+					System.out.print("-------");
+
+					System.out.println(b);
+				}
+			}
+
+
+
+
 		}
 	}
 
@@ -73,8 +119,8 @@ public class MatrixVectorMult {
 
 		protected void map(Text key, Text value, Context context) throws IOException, InterruptedException
 		{
-
-			throw new UnsupportedOperationException("Implementation missing");	
+			System.out.print(key);
+			System.out.println("SecondMap");
 
 		}
 	}
