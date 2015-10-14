@@ -115,6 +115,15 @@ public class MatrixVectorMult {
 
 		protected void reduce(IntWritable key, Iterable<DoubleWritable> values, Context context) throws IOException, InterruptedException{
 			System.out.println("!!!!!!!!!!!!!!!");
+			Double calcule=(double) 0;
+			Iterator<DoubleWritable> count = values.iterator();
+			while(count.hasNext()){
+				calcule=calcule+count.next().get();
+			}
+			System.out.println(calcule);
+			context.write(key, new DoubleWritable(calcule));
+
+
 		}
 	}
 
