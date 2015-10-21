@@ -3,10 +3,13 @@ package pagerank;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.StringTokenizer;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Counter;
@@ -27,19 +30,62 @@ public class RemoveDeadends {
 
 	static class Map extends Mapper<LongWritable, Text, Text, Text> {
 		
-		protected void map(LongWritable key, Text value, Context context) 
+		protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException 
 			{
 			// TO DO
-			System.out.println(value.toString());
+			StringTokenizer itr=new StringTokenizer(value.toString(),"\t");
+			Text a= new Text(itr.nextToken());
+
+			Text b= new Text(itr.nextToken());
+
+			Text a1=new Text("0 "+a);
+			Text b1=new Text("1 "+b);
+			context.write(a, b1);
+			context.write(b, a1);
+			
 			}
 		}
 	
 
 	static class Reduce extends Reducer<Text, Text, Text, Text> {
 		
-		protected void reduce(Text key, Iterable<Text> values, Context context){
+		protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException{
 			
 			//TO DO
+			Text b = null;
+			System.out.println(key);
+			boolean hasSortant=false;
+			Iterator<Text> myItr=values.iterator();
+			ArrayList<Text> myText=new ArrayList<Text>();
+			while(myItr.hasNext()){
+
+				StringTokenizer itr=new StringTokenizer(myItr.next().toString()," ");
+				IntWritable a= new IntWritable(Integer.parseInt(itr.nextToken()));
+				b= new Text(itr.nextToken());
+
+				if(a.get()==1){
+					hasSortant=true;
+				}
+				else{
+					myText.add(b);
+				}
+			}
+			if(hasSortant){
+				
+				for(int i=0;i<myText.size();i++){
+					context.write(myText.get(i), key );
+					System.out.print(i);
+					System.out.print(myText.get(i));
+					System.out.print("  ");
+					System.out.println(key);
+					
+				}
+				Counter c=context.getCounter(myCounters.NUMNODES);
+				c.increment(1);
+			}
+			System.out.println("********************************************");
+			
+			
 		}
 }
 
@@ -58,22 +104,57 @@ public class RemoveDeadends {
 		String currentInput = conf.get("processedGraphPath");
 		
 		long nNodes = conf.getLong("numNodes", 0);
-		
-			
 		while(existDeadends)
 		{
 			Job job = Job.getInstance(conf);
 			job.setJobName("deadends job");
+			
+			job.setMapOutputKeyClass(Text.class);
+			job.setMapOutputValueClass(Text.class);
+
+			job.setMapperClass(Map.class);
+			job.setReducerClass(Reduce.class);
+
+			job.setInputFormatClass(TextInputFormat.class);
+			job.setOutputFormatClass(TextOutputFormat.class);
+
+			FileInputFormat.setInputPaths(job, new Path(conf.get("processedGraphPath")));
+			FileOutputFormat.setOutputPath(job, new Path(conf.get("intermediaryResultPath")));
+			job.waitForCompletion(true);
+
+			
+			FileUtils.deleteDirectory(new File(conf.get("processedGraphPath")));
+		
+			FileUtils.copyDirectory(new File(conf.get("intermediaryResultPath")), new File(conf.get("processedGraphPath")));
+			FileUtils.deleteDirectory(new File(conf.get("intermediaryResultPath")));
+			System.out.println("Let's do");
+			
+			
+			Counters counters=job.getCounters();
+			Counter c1 = counters.findCounter(myCounters.NUMNODES);
+			System.out.print(c1.getValue());
+			System.out.print(nNodes);
+			if(c1.getValue()==nNodes)
+			{
+				existDeadends = false;
+			}
 			/* TO DO : configure job and move in the best manner the output for each iteration
 			 * you have to update the number of nodes in the graph after each iteration,
 			 * use conf.setLong("numNodes", nNodes);
 			*/
-			existDeadends = false;
+			else{
+				conf.setLong("numNodes", c1.getValue());
+				nNodes=conf.getLong("numNodes", c1.getValue());
+			}
+			
 			
 		}		
-		// when you finished implementing delete this line
+		
 		System.out.println("Good");
-		throw new UnsupportedOperationException("Implementation missing");
+		
+		// when you finished implementing delete this line
+		
+		//throw new UnsupportedOperationException("Implementation missing");
 		
 		
 	}
