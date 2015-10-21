@@ -32,7 +32,6 @@ public class RemoveDeadends {
 		
 		protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException 
 			{
-			// TO DO
 			StringTokenizer itr=new StringTokenizer(value.toString(),"\t");
 			Text a= new Text(itr.nextToken());
 
@@ -51,9 +50,7 @@ public class RemoveDeadends {
 		
 		protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException{
 			
-			//TO DO
 			Text b = null;
-			System.out.println(key);
 			boolean hasSortant=false;
 			Iterator<Text> myItr=values.iterator();
 			ArrayList<Text> myText=new ArrayList<Text>();
@@ -74,16 +71,11 @@ public class RemoveDeadends {
 				
 				for(int i=0;i<myText.size();i++){
 					context.write(myText.get(i), key );
-					System.out.print(i);
-					System.out.print(myText.get(i));
-					System.out.print("  ");
-					System.out.println(key);
 					
 				}
 				Counter c=context.getCounter(myCounters.NUMNODES);
 				c.increment(1);
 			}
-			System.out.println("********************************************");
 			
 			
 		}
@@ -127,13 +119,12 @@ public class RemoveDeadends {
 		
 			FileUtils.copyDirectory(new File(conf.get("intermediaryResultPath")), new File(conf.get("processedGraphPath")));
 			FileUtils.deleteDirectory(new File(conf.get("intermediaryResultPath")));
-			System.out.println("Let's do");
+			
 			
 			
 			Counters counters=job.getCounters();
 			Counter c1 = counters.findCounter(myCounters.NUMNODES);
-			System.out.print(c1.getValue());
-			System.out.print(nNodes);
+			
 			if(c1.getValue()==nNodes)
 			{
 				existDeadends = false;
@@ -149,12 +140,6 @@ public class RemoveDeadends {
 			
 			
 		}		
-		
-		System.out.println("Good");
-		
-		// when you finished implementing delete this line
-		
-		//throw new UnsupportedOperationException("Implementation missing");
 		
 		
 	}

@@ -31,6 +31,14 @@ public class PageRank {
 		if(! dir.exists())
 			FileUtils.forceMkdir(dir);
 		
+		BufferedWriter output = new BufferedWriter(new FileWriter(directoryPath + "/vector.txt"));
+		float a= (float)1/n;
+		for(int i=0;i<n;i++){
+		output.write(String.format("%.5f", a));
+		output.write("\n");
+		}
+		System.out.print(n);
+		output.close();
 		//TO DO			
 	}
 	
@@ -65,7 +73,8 @@ public class PageRank {
 		//TO DO
 
 		// to retrieve the number of nodes use long nNodes = conf.getLong("numNodes", 0); 
-
+		Long nNodes = conf.getLong("numNodes", 0); 
+		createInitialRankVector(initialVector,nNodes);
 		
 
 		// when you finished implementing delete this line
