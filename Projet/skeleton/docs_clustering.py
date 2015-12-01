@@ -159,9 +159,20 @@ def purity(clustering, ground_truth) :
         ## {sports : 3, music : 5, politics : 4, ...}
         ## Pick the category with the biggest count
         histogram = {}
-           
-    return 0.0
-
+        for docIdx in labels2docIds[cluster_index]]
+                if ground_truth[docIdx].category not in histogram :
+                        histogram[ground_truth[docIdx].category] = 0 ##Initialize the list
+                if ground_truth[docIdx].category in histogram :
+                        histogram[ground_truth[docIdx].category] = histogram[ground_truth[docIdx].category]+1
+        somme=0
+        vMax=0
+        for hisIdx in histogram :
+                somme=histogram[hisIdx]+somme
+                if(histogram[hisIdx]>vMax)
+                        vMax=histogram[hisIdx]
+        totalSum=totalSum+vMax/somme
+         
+    return totalSum
 '''
 It computes the entropy of a clustering with respect to a ground truth
 clustering. 
