@@ -216,8 +216,8 @@ def entropy(clustering, ground_truth) :
                 somme=histogram_ground_truth[hisIdx]+somme
 	for hisIdx in histogram_ground_truth :
 		p=histogram_ground_truth[hisIdx]/somme
-##		entropy=entropy+(-p*log(p))
-		entropy=entropy+(-p*log(2,p))*(somme/n_documents)
+		entropy=entropy+(-p*log(p,2))
+##		entropy=entropy+(-p*log(p,2))*(somme/n_documents)
 	totalSum=totalSum+entropy
 		        
     return totalSum
